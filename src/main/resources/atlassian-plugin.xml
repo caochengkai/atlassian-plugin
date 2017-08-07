@@ -8,9 +8,13 @@
     </plugin-info>
 
     <!-- add our i18n resource -->
-    <resource type="i18n" name="i18n" location="dianrong.plugin"/>
-    
-    <!-- add our web resources -->
+    <resource type="i18n" name="i18n" location="i18n/i18n"/>
+
+
+    <resource type="download" name="planned-vs-released-chart-screenshot.png" location="/images/planned-vs-released-chart-screenshot.png"/>
+    <resource type="download" name="planned-vs-released-chart-thumbnail.png" location="/images/planned-vs-released-chart-thumbnail.png"/>
+
+    <!-- add our web resources
     <web-resource key="dianrong.plugin-resources" name="dianrong.plugin Web Resources">
         <dependency>com.atlassian.auiplugin:ajs</dependency>
         
@@ -20,5 +24,9 @@
 
         <context>dianrong.plugin</context>
     </web-resource>
+    -->
+    <gadget key="planned-vs-released-chart" name="planned-vs-released-chart" location="planned-vs-released-chart.xml">
+        <description>planned-vs-released-chart</description>
+    </gadget>
     
 </atlassian-plugin>
