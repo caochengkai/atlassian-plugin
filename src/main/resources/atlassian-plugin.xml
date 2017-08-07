@@ -25,6 +25,9 @@
         <context>dianrong.plugin</context>
     </web-resource>
     -->
+    <rest key="dianrong-gadget-rest-resources" path="/dianrong-gadget" version="1.0">
+        <description>Provides the REST resource for the project list.</description>
+    </rest>
     <gadget key="planned-vs-released-chart" name="planned-vs-released-chart" location="planned-vs-released-chart.xml">
         <description>planned-vs-released-chart</description>
     </gadget>

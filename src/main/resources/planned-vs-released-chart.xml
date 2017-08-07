@@ -29,6 +29,7 @@
     <UserPref name="projectOrFilterId" datatype="hidden"/>
     <UserPref name="isPopup" datatype="hidden" default_value="false"/>
     <UserPref name="isConfigured" datatype="hidden" default_value="false" />
+    <UserPref name="refresh" datatype="hidden" default_value="false"/>
     <UserPref name="period" datatype="hidden" default_value="releasedVersion"/>
     <UserPref name="previous" datatype="hidden" default_value="5"/>
 

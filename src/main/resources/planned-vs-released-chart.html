@@ -185,7 +185,7 @@
                     var height = Math.round(width * 2 / 3);
                     if (gadgets.views.getCurrentView().getName() === "canvas") {
                         return {
-                            url: "/rest/gadget/1.0/createdVsResolved/generate",
+                            url: "/rest/dianrong-gadget/1.0/planned-vs-released-chart/generate",
                             data: {
                                 projectOrFilterId: gadgets.util.unescapeString(preferences.projectOrFilterId),
                                 periodName: preferences.periodName,
@@ -201,7 +201,7 @@
                         };
                     } else {
                         return {
-                            url: "/rest/gadget/1.0/createdVsResolved/generate",
+                            url: "/rest/dianrong-gadget/1.0/planned-vs-released-chart/generate",
                             data: {
                                 projectOrFilterId: gadgets.util.unescapeString(preferences.projectOrFilterId),
                                 periodName: preferences.periodName,
