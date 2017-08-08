@@ -1,4 +1,6 @@
-#requireResource("com.atlassian.jira.gadgets:common")
+#requireResource("jira.webresources:almond")
+#requireResource("com.atlassian.jira.gadgets:autocomplete")
+#requireResource("com.atlassian.jira.gadgets:dashboard-item-common-resources")
 #includeResources()
 
 <script type="text/javascript" charset="utf-8">
@@ -20,6 +22,7 @@
                     searchParam = AJS.gadget.fields.projectOrFilterPicker(gadget, "projectOrFilterId");
                 }
                 return {
+                    action: "/rest/dianrong-gadget/1.0/planned-vs-released-chart/validate",
                     theme: function () {
                         if (gadgets.window.getViewportDimensions().width < 450) {
                             return "gdt top-label";

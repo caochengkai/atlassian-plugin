@@ -2,6 +2,7 @@
 <Module>
     <ModulePrefs title="__MSG_gadget.planned.vs.released.chart.title__" directory_title="__MSG_gadget.planned.vs.released.chart.title__"
                  description="__MSG_gadget.planned.vs.released.chart.description__" author="dianrong"
+                 height="100"
                  screenshot='#staticResourceUrl("com.atlassian.tutorial.dianrong.plugin:planned-vs-released-chart", "planned-vs-released-chart-screenshot.png")'
                  thumbnail='#staticResourceUrl("com.atlassian.tutorial.dianrong.plugin:planned-vs-released-chart", "planned-vs-released-chart-thumbnail.png")'
     >
@@ -33,10 +34,12 @@
     <UserPref name="period" datatype="hidden" default_value="releasedVersion"/>
     <UserPref name="previous" datatype="hidden" default_value="5"/>
 
-    <Content type="html" view="profile">
+    <Content type="html" view="profile,canvas,home">
         <![CDATA[
 
-#requireResource("com.atlassian.jira.gadgets:common")
+#requireResource("jira.webresources:almond")
+        #requireResource("com.atlassian.jira.gadgets:autocomplete")
+        #requireResource("com.atlassian.jira.gadgets:dashboard-item-common-resources")
 #includeResources()
 
 <script type="text/javascript" charset="utf-8">
@@ -58,6 +61,7 @@
                     searchParam = AJS.gadget.fields.projectOrFilterPicker(gadget, "projectOrFilterId");
                 }
                 return {
+                    action: "/rest/dianrong-gadget/1.0/planned-vs-released-chart/validate",
                     theme: function () {
                         if (gadgets.window.getViewportDimensions().width < 450) {
                             return "gdt top-label";
@@ -223,7 +227,7 @@
                     var height = Math.round(width * 2 / 3);
                     if (gadgets.views.getCurrentView().getName() === "canvas") {
                         return {
-                            url: "/rest/gadget/1.0/createdVsResolved/generate",
+                            url: "/rest/dianrong-gadget/1.0/planned-vs-released-chart/generate",
                             data: {
                                 projectOrFilterId: gadgets.util.unescapeString(preferences.projectOrFilterId),
                                 periodName: preferences.periodName,
@@ -239,7 +243,7 @@
                         };
                     } else {
                         return {
-                            url: "/rest/gadget/1.0/createdVsResolved/generate",
+                            url: "/rest/dianrong-gadget/1.0/planned-vs-released-chart/generate",
                             data: {
                                 projectOrFilterId: gadgets.util.unescapeString(preferences.projectOrFilterId),
                                 periodName: preferences.periodName,
