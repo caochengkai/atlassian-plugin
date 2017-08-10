@@ -93,7 +93,7 @@
                     }()
         },
         view: {
-            enableReload: true, onResizeReload: true, template: function (args) {
+            enableReload: true, onResizeReload: true,onResizeAdjustHeight:true, template: function (args) {
                 var gadget = this;
 
                 var randomScalingFactor = function(){ return Math.round(Math.random()*100)};
@@ -124,12 +124,15 @@
 
                 }
 
-                gadget.getView().html('<canvas id="canvas"></canvas>');
+                gadget.getView().empty().html('<canvas id="canvas"></canvas>');
+
+                setTimeout(function() {
                 var ctx=AJS.$('#canvas')[0].getContext('2d');
                 var chart =new Chart(ctx).Line(lineChartData, {
                     responsive: true
                 });
-
+                gadget.resize();
+                }, 100);
             }, args: [{
                 key: "chart", ajaxOptions: function () {
                     var gadget = this;
@@ -145,9 +148,6 @@
             }]
         }
     });
-
-
-
 </script>
 
         ]]>
