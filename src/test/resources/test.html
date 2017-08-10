@@ -391,7 +391,8 @@ AJS.Gadget({
                 }
                 var height = Math.round(width * 2 / 3);
                 if (gadgets.views.getCurrentView().getName() === "canvas") {
-                    return {url: "/rest/gadget/1.0/createdVsResolved/generate",
+                    return {
+                        url: "/rest/gadget/1.0/createdVsResolved/generate",
                         data: {
                             projectOrFilterId: gadgets.util.unescapeString(preferences.projectOrFilterId),
                             periodName: preferences.periodName,
@@ -406,7 +407,8 @@ AJS.Gadget({
                         }
                     };
                 } else {
-                    return {url: "/rest/gadget/1.0/createdVsResolved/generate",
+                    return {
+                        url: "/rest/gadget/1.0/createdVsResolved/generate",
                         data: {
                             projectOrFilterId: gadgets.util.unescapeString(preferences.projectOrFilterId),
                             periodName: preferences.periodName,

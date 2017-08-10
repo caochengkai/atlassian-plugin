@@ -65,20 +65,20 @@ public abstract class SearchQueryBackedResource extends AbstractResource {
     String queryString = (String) params.get("projectOrFilterId");
     if (queryString.startsWith("filter-")) {
       if (params.get("searchRequest") == null) {
-        errors.add(new ValidationError("projectOrFilterId", "dashboard.item.error.invalid.filter"));
+        errors.add(new ValidationError("projectOrFilterId", this.authenticationContext.getI18nHelper().getText("dashboard.item.error.invalid.filter")));
       }
     } else if (queryString.startsWith("project-")) {
       if (params.get("project") == null) {
-        errors.add(new ValidationError("projectOrFilterId", "dashboard.item.error.invalid.project"));
+        errors.add(new ValidationError("projectOrFilterId", this.authenticationContext.getI18nHelper().getText("dashboard.item.error.invalid.project")));
       } else if (!this.permissionManager.hasPermission(ProjectPermissions.BROWSE_PROJECTS, (Project) params.get("project"), this.authenticationContext.getLoggedInUser())) {
-        errors.add(new ValidationError("projectOrFilterId", "dashboard.item.error.invalid.project"));
+        errors.add(new ValidationError("projectOrFilterId", this.authenticationContext.getI18nHelper().getText("dashboard.item.error.invalid.project")));
       }
     } else if (queryString.startsWith("jql-")) {
       if (params.get("searchRequest") == null) {
-        errors.add(new ValidationError("projectOrFilterId", "dashboard.item.error.invalid.jql"));
+        errors.add(new ValidationError("projectOrFilterId", this.authenticationContext.getI18nHelper().getText("dashboard.item.error.invalid.jql")));
       }
     } else {
-      errors.add(new ValidationError("projectOrFilterId", "dashboard.item.error.invalid.projectOrFilterId"));
+      errors.add(new ValidationError("projectOrFilterId", this.authenticationContext.getI18nHelper().getText("dashboard.item.error.invalid.projectOrFilterId")));
     }
 
   }

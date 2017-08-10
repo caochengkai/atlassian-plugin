@@ -1,10 +1,8 @@
 package com.atlassian.jira.gadgets;
 
 import com.atlassian.jira.bc.issue.search.SearchService;
-import com.atlassian.jira.charts.Chart;
 import com.atlassian.jira.charts.ChartFactory;
 import com.atlassian.jira.charts.ChartFactory.ChartContext;
-import com.atlassian.jira.charts.ChartFactory.PeriodName;
 import com.atlassian.jira.charts.ChartFactory.VersionLabel;
 import com.atlassian.jira.charts.jfreechart.TimePeriodUtils;
 import com.atlassian.jira.charts.util.ChartUtils;
@@ -78,10 +76,8 @@ public class PlannedVsReleasedResource extends SearchQueryBackedResource {
 
   @GET
   @Path("/generate")
-  public Response generateChart(@QueryParam("projectOrFilterId") String queryString,
-      @QueryParam("daysprevious") @DefaultValue("30") String days, @QueryParam("periodName") @DefaultValue("daily") String periodName,
-      @QueryParam("versionLabel") @DefaultValue("major") String versionLabel, @QueryParam("isCumulative") @DefaultValue("true") boolean isCumulative,
-      @QueryParam("showUnresolvedTrend") @DefaultValue("false") boolean showUnresolvedTrend, @QueryParam("returnData") @DefaultValue("false") boolean returnData,
+  public Response generateChart(@QueryParam("projectOrFilterId") String queryString, @QueryParam("previous") @DefaultValue("5") String previous,
+      @QueryParam("period") @DefaultValue("releasedVersion") String period, @QueryParam("returnData") @DefaultValue("false") boolean returnData,
       @QueryParam("width") @DefaultValue("450") int width, @QueryParam("height") @DefaultValue("300") int height, @QueryParam("inline") @DefaultValue("false") boolean inline) {
     if (StringUtils.isNotBlank(queryString) && !queryString.contains("-")) {
       queryString = "filter-" + queryString;
@@ -91,34 +87,29 @@ public class PlannedVsReleasedResource extends SearchQueryBackedResource {
     ApplicationUser user = this.authenticationContext.getUser();
     HashMap params = new HashMap();
     SearchRequest searchRequest = this.getSearchRequestAndValidate(queryString, errors, params);
-    PeriodName period = this.resourceDateValidator.validatePeriod("periodName", periodName, errors);
-    int numberOfDays = this.resourceDateValidator.validateDaysPrevious("daysprevious", period, days, errors);
-    VersionLabel label = this.validateVersionLabel(versionLabel, errors);
     if (!errors.isEmpty()) {
       return Response.status(400).entity(Builder.newBuilder(errors).build()).cacheControl(CacheControl.NO_CACHE).build();
     } else {
       ChartContext context = new ChartFactory.ChartContext(user, searchRequest, width, height, inline);
 
       try {
-        Chart e = this.chartFactory.generateCreatedVsResolvedChart(context, numberOfDays, period, label, isCumulative, showUnresolvedTrend);
-        String location = e.getLocation();
-        String title = this.getFilterTitle(params);
-        String filterUrl = this.getFilterUrl(params);
-        Integer issuesCreated = (Integer) e.getParameters().get("numCreatedIssues");
-        Integer issuesResolved = (Integer) e.getParameters().get("numResolvedIssues");
-        String imageMap = e.getImageMap();
-        String imageMapName = e.getImageMapName();
-        PlannedVsReleasedResource.DataRow[] data = null;
-        if (returnData) {
-          CategoryDataset createdVsResolvedChart = (CategoryDataset) e.getParameters().get("completeDataset");
-          XYDataset chartDataset = (XYDataset) e.getParameters().get("chartDataset");
-          XYURLGenerator completeUrlGenerator = (XYURLGenerator) e.getParameters().get("completeDatasetUrlGenerator");
-          data = this.generateDataSet(createdVsResolvedChart, completeUrlGenerator, chartDataset, showUnresolvedTrend);
-        }
-
-        PlannedVsReleasedResource.PlannedVsReleasedChart createdVsResolvedChart1 = new PlannedVsReleasedResource.PlannedVsReleasedChart(location, title, filterUrl,
-            issuesCreated.intValue(), issuesResolved.intValue(), imageMap, imageMapName, data, width, height, e.getBase64Image());
-        return Response.ok(createdVsResolvedChart1).cacheControl(CacheControl.NO_CACHE).build();
+//        Chart e = this.chartFactory.generateCreatedVsResolvedChart(context, numberOfDays, period, label, isCumulative, showUnresolvedTrend);
+//        String location = e.getLocation();
+//        String title = this.getFilterTitle(params);
+//        String filterUrl = this.getFilterUrl(params);
+//        String imageMap = e.getImageMap();
+//        String imageMapName = e.getImageMapName();
+//        PlannedVsReleasedResource.DataRow[] data = null;
+//        if (returnData) {
+//          CategoryDataset createdVsResolvedChart = (CategoryDataset) e.getParameters().get("completeDataset");
+//          XYDataset chartDataset = (XYDataset) e.getParameters().get("chartDataset");
+//          XYURLGenerator completeUrlGenerator = (XYURLGenerator) e.getParameters().get("completeDatasetUrlGenerator");
+//          data = this.generateDataSet(createdVsResolvedChart, completeUrlGenerator, chartDataset, showUnresolvedTrend);
+//        }
+//
+//        PlannedVsReleasedResource.PlannedVsReleasedChart createdVsResolvedChart1 = new PlannedVsReleasedResource.PlannedVsReleasedChart(location, title, filterUrl,
+//            issuesCreated.intValue(), issuesResolved.intValue(), imageMap, imageMapName, data, width, height, e.getBase64Image());
+        return Response.ok("OK").cacheControl(CacheControl.NO_CACHE).build();
       } catch (SearchUnavailableException var32) {
         if (!var32.isIndexingEnabled()) {
           return this.createIndexingUnavailableResponse(this.createIndexingUnavailableMessage());
@@ -148,7 +139,7 @@ public class PlannedVsReleasedResource extends SearchQueryBackedResource {
         trendCount = Integer.valueOf(dataset.getValue(2, col).intValue());
       }
 
-      data[col] = new PlannedVsReleasedResource.DataRow(key, createdUrl, createdVal, resolvedUrl, resolvedVal, trendCount);
+//      data[col] = new PlannedVsReleasedResource.DataRow(key, createdUrl, createdVal, resolvedUrl, resolvedVal, trendCount);
     }
 
     return data;
@@ -180,27 +171,18 @@ public class PlannedVsReleasedResource extends SearchQueryBackedResource {
   public static class DataRow {
     private Object key;
     @XmlElement
-    private String createdUrl;
-    @XmlElement
     private int createdValue;
     @XmlElement
-    private String resolvedUrl;
-    @XmlElement
     private int resolvedValue;
-    @XmlElement
-    private Integer trendCount;
     @XmlElement(name = "key")
     private String keyString;
 
     public DataRow() {}
 
-    DataRow(Object key, String createdUrl, int createdValue, String resolvedUrl, int resolvedValue, Integer trendCount) {
+    DataRow(Object key, int createdValue, int resolvedValue) {
       this.key = key;
-      this.createdUrl = createdUrl;
       this.createdValue = createdValue;
-      this.resolvedUrl = resolvedUrl;
       this.resolvedValue = resolvedValue;
-      this.trendCount = trendCount;
       this.keyString = key.toString();
     }
 
@@ -212,24 +194,12 @@ public class PlannedVsReleasedResource extends SearchQueryBackedResource {
       return this.key;
     }
 
-    public String getCreatedUrl() {
-      return this.createdUrl;
-    }
-
     public int getCreatedValue() {
       return this.createdValue;
     }
 
-    public String getResolvedUrl() {
-      return this.resolvedUrl;
-    }
-
     public int getResolvedValue() {
       return this.resolvedValue;
-    }
-
-    public Integer getTrendCount() {
-      return this.trendCount;
     }
 
     public int hashCode() {

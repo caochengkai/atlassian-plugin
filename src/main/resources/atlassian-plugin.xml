@@ -14,17 +14,17 @@
     <resource type="download" name="planned-vs-released-chart-screenshot.png" location="/images/planned-vs-released-chart-screenshot.png"/>
     <resource type="download" name="planned-vs-released-chart-thumbnail.png" location="/images/planned-vs-released-chart-thumbnail.png"/>
 
-    <!-- add our web resources
+    <!-- add our web resources -->
     <web-resource key="dianrong.plugin-resources" name="dianrong.plugin Web Resources">
         <dependency>com.atlassian.auiplugin:ajs</dependency>
         
-        <resource type="download" name="dianrong.plugin.css" location="/css/dianrong.plugin.css"/>
-        <resource type="download" name="dianrong.plugin.js" location="/js/dianrong.plugin.js"/>
-        <resource type="download" name="images/" location="/images"/>
+        <resource type="download" name="default.css" location="/css/default.css"/>
+        <resource type="download" name="normalize.css" location="/css/normalize.css"/>
+        <resource type="download" name="Chart.js" location="/js/Chart.js"/>
 
         <context>dianrong.plugin</context>
     </web-resource>
-    -->
+
     <rest key="dianrong-gadget-rest-resources" path="/dianrong-gadget" version="1.0">
         <description>Provides the REST resource for the project list.</description>
     </rest>
