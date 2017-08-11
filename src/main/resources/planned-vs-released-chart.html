@@ -8,18 +8,9 @@
         baseUrl: "__ATLASSIAN_BASE_URL__",
         useOauth: "/rest/gadget/1.0/currentUser",
         config: {
-            descriptor: function () {
+            descriptor: function (args) {
                 var gadget = this;
-                var searchParam;
-                if (/^jql-/.test(gadget.getPref('projectOrFilterId')) || gadget.getPref('isPopup') === "true") {
-                    searchParam = {
-                        userpref: "projectOrFilterId",
-                        type: "hidden",
-                        value: gadgets.util.unescapeString(gadget.getPref("projectOrFilterId"))
-                    };
-                } else {
-                    searchParam = AJS.gadget.fields.projectOrFilterPicker(gadget, "projectOrFilterId");
-                }
+
                 return {
                     action: "/rest/dianrong-gadget/1.0/planned-vs-released-chart/validate",
                     theme: function () {
@@ -29,7 +20,7 @@
                             return "gdt";
                         }
                     }(),
-                    fields: [searchParam, {
+                    fields: [AJS.gadget.fields.projectPicker(gadget, "projectOrFilterId", args.projectOptions), {
                         userpref: "period",
                         label: gadget.getMsg("gadget.planned.vs.released.chart.period.label"),
                         description: gadget.getMsg("gadget.planned.vs.released.chart.period.description"),
@@ -47,64 +38,82 @@
                         value: gadget.getPref('previous')
                     }, AJS.gadget.fields.nowConfigured()]
                 };
-            }
+            },
+            args: function () {
+                return [
+                    {
+                        key: "projectOptions",
+                        ajaxOptions: "/rest/gadget/1.0/filtersAndProjects?showFilters=false"
+
+                    }
+
+
+                ];
+            }()
         },
         view: {
             enableReload: true, onResizeReload: true, onResizeAdjustHeight: true, template: function (args) {
                 var gadget = this;
 
-                var randomScalingFactor = function(){ return Math.round(Math.random()*100)};
+                var labels = [];
+                var plannedData = [];
+                var releasedData = [];
+
+                args.data.forEach(
+                    function (val, index, arr) {
+                        labels.add(val.label);
+                        planne.add(val.estimate / 1000 / 60 / 60 / 8);
+                        released.add(val.timeSpent / 1000 / 60 / 60 / 8);
+                    });
                 var lineChartData = {
-                    labels : ["January","February","March","April","May","June","July"],
-                    datasets : [
+                    labels: labels,
+                    datasets: [
                         {
-                            label: "My First dataset",
-                            fillColor : "rgba(220,220,220,0.2)",
-                            strokeColor : "rgba(220,220,220,1)",
-                            pointColor : "rgba(220,220,220,1)",
-                            pointStrokeColor : "#fff",
-                            pointHighlightFill : "#fff",
-                            pointHighlightStroke : "rgba(220,220,220,1)",
-                            data : [randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor()]
+                            label: "planned dataset",
+                            fillColor: "rgba(220,220,220,0.2)",
+                            strokeColor: "rgba(220,220,220,1)",
+                            pointColor: "rgba(220,220,220,1)",
+                            pointStrokeColor: "#fff",
+                            pointHighlightFill: "#fff",
+                            pointHighlightStroke: "rgba(220,220,220,1)",
+                            data: plannedData
                         },
                         {
-                            label: "My Second dataset",
-                            fillColor : "rgba(151,187,205,0.2)",
-                            strokeColor : "rgba(151,187,205,1)",
-                            pointColor : "rgba(151,187,205,1)",
-                            pointStrokeColor : "#fff",
-                            pointHighlightFill : "#fff",
-                            pointHighlightStroke : "rgba(151,187,205,1)",
-                            data : [randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor()]
+                            label: "released dataset",
+                            fillColor: "rgba(151,187,205,0.2)",
+                            strokeColor: "rgba(151,187,205,1)",
+                            pointColor: "rgba(151,187,205,1)",
+                            pointStrokeColor: "#fff",
+                            pointHighlightFill: "#fff",
+                            pointHighlightStroke: "rgba(151,187,205,1)",
+                            data: releasedDate
                         }
                     ]
 
                 }
+                gadgets.window.setTitle("__MSG_gadget.planned.vs.released.chart.title__" + ":" + args.chart.projectName);
+                gadget.getView().empty().html('<canvas id="canvas"></canvas><b color="rgba(220,220,220,1)">planned</b><b color="rgba(151,187,205,1)">released</b>');
 
-                gadget.getView().html('<canvas id="canvas"></canvas>');
-                var ctx=AJS.$('#canvas')[0].getContext('2d');
-                var chart =new Chart(ctx).Line(lineChartData, {
-                    responsive: true
-                });
-
+                setTimeout(function () {
+                    var ctx = AJS.$('#canvas')[0].getContext('2d');
+                    var chart = new Chart(ctx).Line(lineChartData, {
+                        responsive: true
+                    });
+                    gadget.resize();
+                }, 100);
             }, args: [{
                 key: "chart", ajaxOptions: function () {
                     var gadget = this;
-                        return {
-                            url: "/rest/dianrong-gadget/1.0/planned-vs-released-chart/generate",
-                            data: {
-                                projectOrFilterId: gadgets.util.unescapeString(gadget.getPref('projectOrFilterId')),
-                                period: gadget.getPref('period'),
-                                previous: gadget.getPref('previous')
-                            }
-                        };
+                    return {
+                        url: "/rest/dianrong-gadget/1.0/planned-vs-released-chart/generate",
+                        data: {
+                            projectOrFilterId: gadgets.util.unescapeString(gadget.getPref('projectOrFilterId')),
+                            period: gadget.getPref('period'),
+                            previous: gadget.getPref('previous')
+                        }
+                    };
                 }
-            }],
-            callback:function () {
-                alert(1)
-            }
+            }]
         }
     });
-
-
 </script>

@@ -1,18 +1,14 @@
 package com.atlassian.jira.gadgets.common;
 
 import com.atlassian.jira.bc.issue.search.SearchService;
-import com.atlassian.jira.bc.issue.search.SearchService.IssueSearchParameters;
 import com.atlassian.jira.charts.util.ChartUtils;
 import com.atlassian.jira.issue.search.SearchRequest;
-import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.jira.permission.ProjectPermissions;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.rest.v1.model.errors.ValidationError;
 import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.security.PermissionManager;
 import com.atlassian.jira.util.velocity.VelocityRequestContextFactory;
-import com.atlassian.query.Query;
-import com.atlassian.query.QueryImpl;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Collection;
@@ -23,17 +19,12 @@ import java.util.Map;
  */
 public abstract class SearchQueryBackedResource extends AbstractResource {
 
-  protected static final String QUERY_STRING = "projectOrFilterId";
-  static final String PROJECT = "project";
-  private static final String SEARCH_REQUEST = "searchRequest";
+
   protected final ChartUtils chartUtils;
   protected final JiraAuthenticationContext authenticationContext;
   protected final PermissionManager permissionManager;
   private VelocityRequestContextFactory velocityRequestContextFactory;
   protected final SearchService searchService;
-  private static final String FILTER_PREFIX = "filter-";
-  private static final String PROJECT_PREFIX = "project-";
-  private static final String JQL_PREFIX = "jql-";
 
   public SearchQueryBackedResource(ChartUtils chartUtils, JiraAuthenticationContext authenticationContext, SearchService searchService, PermissionManager permissionManager,
       VelocityRequestContextFactory velocityRequestContextFactory) {
@@ -41,7 +32,7 @@ public abstract class SearchQueryBackedResource extends AbstractResource {
     this.authenticationContext = authenticationContext;
     this.searchService = searchService;
     this.permissionManager = permissionManager;
-    this.velocityRequestContextFactory = velocityRequestContextFactory;
+    this.velocityRequestContextFactory=velocityRequestContextFactory;
   }
 
   protected SearchRequest getSearchRequestAndValidate(String queryString, Collection<ValidationError> errors, Map<String, Object> params) {
@@ -81,27 +72,6 @@ public abstract class SearchQueryBackedResource extends AbstractResource {
       errors.add(new ValidationError("projectOrFilterId", this.authenticationContext.getI18nHelper().getText("dashboard.item.error.invalid.projectOrFilterId")));
     }
 
-  }
-
-  protected String getFilterTitle(Map<String, Object> params) {
-    return params.containsKey("project") ? ((Project) params.get("project")).getName()
-        : (params.containsKey("searchRequest") ? ((SearchRequest) params.get("searchRequest")).getName() : "dashboard.item.anonymous.filter");
-  }
-
-  protected String getFilterUrl(Map<String, Object> params) {
-    if (params.containsKey("project")) {
-      Project request1 = (Project) params.get("project");
-      Query query = JqlQueryBuilder.newBuilder().where().project().eq(request1.getKey()).buildQuery();
-      return this.searchService.getIssueSearchPath(this.authenticationContext.getLoggedInUser(), IssueSearchParameters.builder().query(query).build());
-    } else if (params.containsKey("searchRequest")) {
-      SearchRequest request = (SearchRequest) params.get("searchRequest");
-      return request != null && request.isLoaded() && request.getId() != null
-          ? this.searchService.getIssueSearchPath(this.authenticationContext.getLoggedInUser(), IssueSearchParameters.builder().filterId(request.getId()).build())
-          : this.searchService.getIssueSearchPath(this.authenticationContext.getLoggedInUser(),
-              IssueSearchParameters.builder().query((Query) (request == null ? new QueryImpl() : request.getQuery())).build());
-    } else {
-      return "";
-    }
   }
 
   protected String createIndexingUnavailableMessage() {

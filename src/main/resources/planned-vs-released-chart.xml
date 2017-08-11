@@ -79,71 +79,79 @@
                     }, AJS.gadget.fields.nowConfigured()]
                 };
             },
-            args: function()
+            args: function () {
+                return [
                     {
-                        return [
-                            {
-                                key: "projectOptions",
-                                ajaxOptions:  "/rest/gadget/1.0/filtersAndProjects?showFilters=false"
+                        key: "projectOptions",
+                        ajaxOptions: "/rest/gadget/1.0/filtersAndProjects?showFilters=false"
 
-                            }
+                    }
 
 
-                        ];
-                    }()
+                ];
+            }()
         },
         view: {
-            enableReload: true, onResizeReload: true,onResizeAdjustHeight:true, template: function (args) {
+            enableReload: true, onResizeReload: true, onResizeAdjustHeight: true, template: function (args) {
                 var gadget = this;
 
-                var randomScalingFactor = function(){ return Math.round(Math.random()*100)};
+                var labels = [];
+                var plannedData = [];
+                var releasedData = [];
+
+                args.chart.data.forEach(
+                    function (val, index, arr) {
+                        labels.push(val.label);
+                        plannedData.push((val.estimate / 60 / 60 / 8).toFixed(1));
+                        releasedData.push((val.timeSpent / 60 / 60 / 8).toFixed(1));
+                    });
                 var lineChartData = {
-                    labels : ["January","February","March","April","May","June","July"],
-                    datasets : [
+                    labels: labels,
+                    datasets: [
                         {
-                            label: "My First dataset",
-                            fillColor : "rgba(220,220,220,0.2)",
-                            strokeColor : "rgba(220,220,220,1)",
-                            pointColor : "rgba(220,220,220,1)",
-                            pointStrokeColor : "#fff",
-                            pointHighlightFill : "#fff",
-                            pointHighlightStroke : "rgba(220,220,220,1)",
-                            data : [randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor()]
+                            label: "planned dataset",
+                            fillColor: "rgba(220,220,220,0.2)",
+                            strokeColor: "rgba(220,220,220,1)",
+                            pointColor: "rgba(220,220,220,1)",
+                            pointStrokeColor: "#fff",
+                            pointHighlightFill: "#fff",
+                            pointHighlightStroke: "rgba(220,220,220,1)",
+                            data: plannedData
                         },
                         {
-                            label: "My Second dataset",
-                            fillColor : "rgba(151,187,205,0.2)",
-                            strokeColor : "rgba(151,187,205,1)",
-                            pointColor : "rgba(151,187,205,1)",
-                            pointStrokeColor : "#fff",
-                            pointHighlightFill : "#fff",
-                            pointHighlightStroke : "rgba(151,187,205,1)",
-                            data : [randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor()]
+                            label: "released dataset",
+                            fillColor: "rgba(151,187,205,0.2)",
+                            strokeColor: "rgba(151,187,205,1)",
+                            pointColor: "rgba(151,187,205,1)",
+                            pointStrokeColor: "#fff",
+                            pointHighlightFill: "#fff",
+                            pointHighlightStroke: "rgba(151,187,205,1)",
+                            data: releasedData
                         }
                     ]
 
                 }
+                gadgets.window.setTitle("__MSG_gadget.planned.vs.released.chart.title__" + " : " + args.chart.projectName);
+                gadget.getView().empty().html('<canvas id="canvas"></canvas><div style="text-align:center"><font color="#DCDCDC" style="font-weight:bold;">planned days</font></div><div style="text-align:center"><font color="#97BBCD" style="font-weight:bold;">released days</font></div>');
 
-                gadget.getView().empty().html('<canvas id="canvas"></canvas>');
-
-                setTimeout(function() {
-                var ctx=AJS.$('#canvas')[0].getContext('2d');
-                var chart =new Chart(ctx).Line(lineChartData, {
-                    responsive: true
-                });
-                gadget.resize();
+                setTimeout(function () {
+                    var ctx = AJS.$('#canvas')[0].getContext('2d');
+                    var chart = new Chart(ctx).Line(lineChartData, {
+                        responsive: true
+                    });
+                    gadget.resize();
                 }, 100);
             }, args: [{
                 key: "chart", ajaxOptions: function () {
                     var gadget = this;
-                        return {
-                            url: "/rest/dianrong-gadget/1.0/planned-vs-released-chart/generate",
-                            data: {
-                                projectOrFilterId: gadgets.util.unescapeString(gadget.getPref('projectOrFilterId')),
-                                period: gadget.getPref('period'),
-                                previous: gadget.getPref('previous')
-                            }
-                        };
+                    return {
+                        url: "/rest/dianrong-gadget/1.0/planned-vs-released-chart/generate",
+                        data: {
+                            projectOrFilterId: gadgets.util.unescapeString(gadget.getPref('projectOrFilterId')),
+                            period: gadget.getPref('period'),
+                            previous: gadget.getPref('previous')
+                        }
+                    };
                 }
             }]
         }
