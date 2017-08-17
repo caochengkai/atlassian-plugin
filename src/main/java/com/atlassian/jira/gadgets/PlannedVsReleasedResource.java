@@ -15,7 +15,7 @@ import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.security.PermissionManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.velocity.VelocityRequestContextFactory;
-import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
+import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 import com.atlassian.plugins.rest.common.security.AnonymousAllowed;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -45,9 +45,8 @@ public class PlannedVsReleasedResource extends SearchQueryBackedResource {
 
   private VersionManager versionManager;
 
-  public PlannedVsReleasedResource(@ComponentImport ChartUtils chartUtils, @ComponentImport JiraAuthenticationContext authenticationContext,
-      @ComponentImport PermissionManager permissionManager, @ComponentImport SearchService searchService,
-      @ComponentImport VelocityRequestContextFactory velocityRequestContextFactory, @ComponentImport VersionManager versionManager) {
+  public PlannedVsReleasedResource(@JiraImport ChartUtils chartUtils, @JiraImport JiraAuthenticationContext authenticationContext, @JiraImport PermissionManager permissionManager,
+      @JiraImport SearchService searchService, @JiraImport VelocityRequestContextFactory velocityRequestContextFactory, @JiraImport VersionManager versionManager) {
     super(chartUtils, authenticationContext, searchService, permissionManager, velocityRequestContextFactory);
     this.versionManager = versionManager;
   }
@@ -86,7 +85,7 @@ public class PlannedVsReleasedResource extends SearchQueryBackedResource {
           }
           data.add(new DataRow(version.getName(), estimate, timeSpent));
         });
-        return Response.ok(new PlannedVsReleasedChart(project.getName(),data)).cacheControl(CacheControl.NO_CACHE).build();
+        return Response.ok(new PlannedVsReleasedChart(project.getName(), data)).cacheControl(CacheControl.NO_CACHE).build();
       } catch (SearchUnavailableException var32) {
         if (!var32.isIndexingEnabled()) {
           return this.createIndexingUnavailableResponse(this.createIndexingUnavailableMessage());
