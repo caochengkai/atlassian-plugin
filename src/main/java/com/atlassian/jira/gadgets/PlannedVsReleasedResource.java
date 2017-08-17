@@ -29,10 +29,7 @@ import javax.ws.rs.core.Response;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -73,6 +70,8 @@ public class PlannedVsReleasedResource extends SearchQueryBackedResource {
         List<Version> filteredVersion = versions.stream().filter(version -> version.isReleased() && version.getReleaseDate() != null).sorted((o1, o2) -> {
           return o2.getReleaseDate().compareTo(o1.getReleaseDate());
         }).limit(Long.parseLong(previous)).collect(Collectors.toList());
+
+        Collections.reverse(filteredVersion);
 
         List<DataRow> data = new ArrayList<DataRow>();
         filteredVersion.forEach(version -> {
