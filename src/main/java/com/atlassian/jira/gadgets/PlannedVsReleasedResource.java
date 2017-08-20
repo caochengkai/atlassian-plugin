@@ -15,6 +15,7 @@ import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.security.PermissionManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.velocity.VelocityRequestContextFactory;
+import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 import com.atlassian.plugins.rest.common.security.AnonymousAllowed;
 import org.apache.commons.lang.StringUtils;
@@ -38,6 +39,7 @@ import java.util.stream.Collectors;
 @Path("/planned-vs-released-chart")
 @AnonymousAllowed
 @Produces({MediaType.APPLICATION_JSON})
+@Scanned
 public class PlannedVsReleasedResource extends SearchQueryBackedResource {
 
   private VersionManager versionManager;
