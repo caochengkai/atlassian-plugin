@@ -101,7 +101,7 @@
 
                 args.chart.data.forEach(
                     function (val, index, arr) {
-                        labels.push(val.label);
+                        labels.push(val.label+' '+val.date);
                         plannedData.push((val.estimate / 60 / 60 / 8).toFixed(1));
                         releasedData.push((val.timeSpent / 60 / 60 / 8).toFixed(1));
                     });
@@ -132,7 +132,7 @@
 
                 }
                 gadgets.window.setTitle("__MSG_gadget.planned.vs.released.chart.title__" + " : " + args.chart.projectName);
-                gadget.getView().empty().html('<canvas id="canvas"></canvas><div style="text-align:center"><font color="#DCDCDC" style="font-weight:bold;">planned days</font></div><div style="text-align:center"><font color="#97BBCD" style="font-weight:bold;">released days</font></div>');
+                gadget.getView().empty().html('<canvas id="canvas"></canvas><div style="text-align:center"><font color="#DCDCDC" style="font-weight:bold;">Planned man days</font></div><div style="text-align:center"><font color="#97BBCD" style="font-weight:bold;">Logged man days</font></div>');
 
                 setTimeout(function () {
                     var ctx = AJS.$('#canvas')[0].getContext('2d');

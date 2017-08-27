@@ -23,6 +23,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.apache.commons.lang.time.DateFormatUtils;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -84,7 +85,7 @@ public class PlannedVsReleasedResource extends SearchQueryBackedResource {
             estimate += issue.getOriginalEstimate() == null ? 0 : issue.getOriginalEstimate();
             timeSpent += issue.getTimeSpent() == null ? 0 : issue.getTimeSpent();
           }
-          data.add(new DataRow(version.getName(), estimate, timeSpent));
+          data.add(new DataRow(version.getName(), DateFormatUtils.format(version.getReleaseDate(),"MM/dd"), estimate, timeSpent));
         });
         return Response.ok(new PlannedVsReleasedChart(project.getName(), data)).cacheControl(CacheControl.NO_CACHE).build();
       } catch (SearchUnavailableException var32) {
@@ -117,14 +118,17 @@ public class PlannedVsReleasedResource extends SearchQueryBackedResource {
     @XmlElement
     private String label;
     @XmlElement
+    private String date;
+    @XmlElement
     private Long estimate;
     @XmlElement
     private Long timeSpent;
 
     public DataRow() {}
 
-    public DataRow(String label, Long estimate, Long timeSpent) {
+    public DataRow(String label, String date, Long estimate, Long timeSpent) {
       this.label = label;
+      this.date = date;
       this.estimate = estimate;
       this.timeSpent = timeSpent;
     }
@@ -153,6 +157,15 @@ public class PlannedVsReleasedResource extends SearchQueryBackedResource {
 
     public DataRow setTimeSpent(Long timeSpent) {
       this.timeSpent = timeSpent;
+      return this;
+    }
+
+    public String getDate() {
+      return date;
+    }
+
+    public DataRow setDate(String date) {
+      this.date = date;
       return this;
     }
 
